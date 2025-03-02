@@ -39,20 +39,15 @@ def write_formatted_crontask(
   Raises:
       ValueError: If any parameter is None, empty, or contains only whitespace
   """
-  # Convertir tous les arguments en chaînes de caractères
+  # Convertir tous les arguments en chaînes de caractères et remplacer les valeurs vides ou None par '*'
   params = {
-    'Minute': str(Minute),
-    'Hour': str(Hour),
-    'Day': str(Day),
-    'Month': str(Month),
-    'Weekday': str(Weekday),
+    'Minute': '*' if Minute is None or str(Minute).strip() == '' else str(Minute),
+    'Hour': '*' if Hour is None or str(Hour).strip() == '' else str(Hour),
+    'Day': '*' if Day is None or str(Day).strip() == '' else str(Day),
+    'Month': '*' if Month is None or str(Month).strip() == '' else str(Month),
+    'Weekday': '*' if Weekday is None or str(Weekday).strip() == '' else str(Weekday),
     'command_to_be_executed': command_to_be_executed
   }
-  
-  # Vérifier que chaque paramètre est renseigné et non vide
-  for param_name, param_value in params.items():
-    if param_value is None or param_value.strip() == '':
-      raise ValueError(f"Le paramètre {param_name} ne peut pas être vide ou None")
   
   return f"{Minute} {Hour} {Day} {Month} {Weekday} {command_to_be_executed}"
 
