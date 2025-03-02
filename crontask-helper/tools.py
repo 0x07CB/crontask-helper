@@ -13,31 +13,31 @@ write_formatted_crontask_tool = {
                 'Minute': {
                     'type': 'string',
                     'minLength': 1,
-                    'pattern': '^[0-9*,-/]+$',
+                    'pattern': r'^(\*|([0-9]|[1-5][0-9])([,-][0-9]|[1-5][0-9])*(/[1-9][0-9]*)?)$',
                     'description': 'La minute d\'exécution (numéro ou expression cron utilisant des opérateurs parmi "*", "-", "/", ","). Exemples: "0", "*/5", "0,30", "15-45".'
                 },
                 'Hour': {
                     'type': 'string',
                     'minLength': 1,
-                    'pattern': '^[0-9*,-/]+$',
+                    'pattern': r'^(\*|([0-9]|1[0-9]|2[0-3])([,-][0-9]|1[0-9]|2[0-3])*(/[1-9][0-9]*)?)$',
                     'description': 'L\'heure d\'exécution (numéro ou expression cron utilisant des opérateurs parmi "*", "-", "/", ","). Exemples: "0", "*/2", "9-17", "8,12,18".'
                 },
                 'Day': {
                     'type': 'string',
                     'minLength': 1,
-                    'pattern': '^[0-9*,-/]+$',
+                    'pattern': r'^(\*|([1-9]|[12][0-9]|3[01])([,-][1-9]|[12][0-9]|3[01])*(/[1-9][0-9]*)?)$',
                     'description': 'Le jour du mois (numéro ou expression cron utilisant des opérateurs parmi "*", "-", "/", ","). Exemples: "1", "*/5", "1,15", "10-20".'
                 },
                 'Month': {
                     'type': 'string',
                     'minLength': 1,
-                    'pattern': '^[0-9*,-/]+$',
+                    'pattern': r'^(\*|([1-9]|1[0-2])([,-][1-9]|1[0-2])*(/[1-9][0-9]*)?)$',
                     'description': 'Le mois (numéro ou expression cron utilisant des opérateurs parmi "*", "-", "/", ","). Exemples: "1", "*/3", "1,6,12", "3-8".'
                 },
                 'Weekday': {
                     'type': 'string',
                     'minLength': 1,
-                    'pattern': '^[0-9*,-/]+$',
+                    'pattern': r'^(\*|[0-6]([,-][0-6])*(/[1-9][0-9]*)?)$',
                     'description': 'Le jour de la semaine (numéro ou expression cron utilisant des opérateurs parmi "*", "-", "/", ","). Exemples: "0", "1-5", "0,6", "*/2".'
                 },
                 'command_to_be_executed': {
