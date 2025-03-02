@@ -51,7 +51,7 @@ def main(
                            execute, 
                            model, 
                            ollama_base_url)
-        print("\nRésultat final:")
+        print("\n[END] - Résultat final:")
         print(result)
         
     except KeyboardInterrupt:
