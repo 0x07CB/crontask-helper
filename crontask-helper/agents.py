@@ -43,7 +43,7 @@ def model_unload(model: str, ollama_base_url: str):
 
 
 def generate_response(
-    model: Optional[str] = "qwen2.5:0.5b",
+    model: Optional[str] = "llama3.2:3b",
     messages: Optional[List[Dict[str, Any]]] = None,
     tools: Optional[List[Dict[str, Any]]] = None,
     available_functions: Optional[Dict[str, Any]] = None,
