@@ -29,14 +29,16 @@ Avant d'utiliser `crontask-helper`, assurez-vous d'avoir les éléments suivants
 
 ## Utilisation
 
-Le script `main.py` est l'interface principale pour interagir avec l'agent de configuration de tâches cron. Il accepte les arguments suivants en ligne de commande :
+Le script `main.py` constitue l'interface principale pour interagir avec l'agent de configuration de tâches cron. Il utilise la gestion d'arguments via argparse pour définir son comportement. Voici les options disponibles :
 
-*   `-p` ou `--prompt` : Description en langage naturel de la tâche cron à générer. Cette description guide l'agent dans la création de la configuration cron appropriée.
-*   `-c` ou `--chronos-description`: Description temporelle de la tâche cron.
-*   `-e` ou `--execute` : Commande à exécuter par la tâche cron. Cet argument est optionnel ; si omis, une commande par défaut sera utilisée ou l'agent demandera plus de détails.
-*   `-m` ou `--model` : Nom du modèle Ollama à utiliser pour la génération de la tâche cron (par défaut : `qwen2.5:0.5b`). Assurez-vous que le modèle est installé localement via Ollama.
-*   `-u` ou `--ollama_base_url` : URL de base du serveur Ollama (par défaut : `http://localhost:11434`). Modifiez cette URL si votre serveur Ollama est hébergé ailleurs.
-*   `-U` ou `--unload` : Indique si le modèle Ollama doit être déchargé de la mémoire après l'exécution du script. Utile pour économiser des ressources système.
+*   `-p` ou `--prompt` : Instruction destinée à l'agent, par exemple "Génère une ligne de configuration cron". Cet argument spécifie la description en langage naturel de la tâche cron à générer.
+*   `-c` ou `--chronos-description` : Description temporelle de la tâche cron, par exemple "tous les jours à 7h". Cela permet de définir la planification de l'exécution.
+*   `-e` ou `--execute` : Commande à exécuter par la tâche cron, telle que `/bin/bash /opt/script.sh`. Si cet argument est omis, l'agent utilisera une commande par défaut ou sollicitera des précisions supplémentaires.
+*   `-m` ou `--model` : Nom du modèle Ollama à utiliser pour générer la configuration cron (défaut : `qwen2.5:0.5b`). Veillez à ce que ce modèle soit installé localement via Ollama.
+*   `-u` ou `--ollama_base_url` : URL de base du serveur Ollama (défaut : `http://localhost:11434`). Modifiez ce paramètre si votre serveur Ollama est accessible à une autre adresse.
+*   `-U` ou `--unload` : Flag indiquant que le modèle doit être déchargé de la mémoire après l'exécution du script, ce qui permet d'économiser des ressources système.
+
+Pour plus de détails sur ces arguments, consultez la section d'argparsing dans le fichier `main.py`.
 
 Voici quelques exemples d'utilisation pour illustrer comment configurer différentes tâches cron :
 
