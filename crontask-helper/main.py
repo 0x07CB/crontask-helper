@@ -7,8 +7,7 @@
 #from ollama import chat
 
 import sys
-import os
-from typing import List, Dict, Union, Tuple, Optional, Any
+from typing import Optional
 
 from agents import ask_agent
 from agents import model_unload
@@ -52,7 +51,7 @@ def main(
                            execute, 
                            model, 
                            ollama_base_url)
-        print("\nRésultat final:")
+        print("\n[END] - Résultat final:")
         print(result)
         
     except KeyboardInterrupt:
