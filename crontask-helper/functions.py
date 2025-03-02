@@ -6,7 +6,7 @@
 #from typing import Dict
 from typing import Union
 #from typing import Tuple
-#from typing import Optional
+from typing import Optional
 #from typing import Any
 
 #################
@@ -18,12 +18,12 @@ class CrontaskFormats:
   SpecialStrings = ["@reboot", "@hourly", "@daily", "@midnight", "@weekly", "@monthly", "@yearly"]
 
 def write_formatted_crontask(
-    Minute: Union[str, int],
-    Hour: Union[str, int],
-    Day: Union[str, int],
-    Month: Union[str, int],
-    Weekday: Union[str, int],
-    command_to_be_executed: str
+    Minute: Optional[Union[str, int]] = "*",
+    Hour: Optional[Union[str, int]] = "*",
+    Day: Optional[Union[str, int]] = "*",
+    Month: Optional[Union[str, int]] = "*",
+    Weekday: Optional[Union[str, int]] = "*",
+    command_to_be_executed: Optional[str] = "{{command}}"
 ) -> str:
   """
   Write the formatted crontask with validation of input parameters
