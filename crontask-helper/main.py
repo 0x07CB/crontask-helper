@@ -12,12 +12,13 @@ from typing import Optional
 from agents import ask_agent
 from agents import model_unload
 
+from rich import print as rprint
 
 def main(
     prompt: Optional[str] = None,
     chron_description: Optional[str] = None,
     execute: Optional[str] = None,
-    model: Optional[str] = "qwen2.5:0.5b",
+    model: Optional[str] = "llama3.2:3b",
     ollama_base_url: Optional[str] = "http://localhost:11434",
     unload: Optional[bool] = False,
 ):
@@ -37,12 +38,13 @@ def main(
         try:
             response = requests.get(f"{ollama_base_url}/api/tags")
             if response.status_code != 200:
-                print(f"Erreur: Impossible de se connecter à Ollama sur {ollama_base_url}")
-                print(f"Statut: {response.status_code}")
+                rprint(f"[bold red]Erreur[/bold red]: [underline]Impossible de se connecter à Ollama sur {ollama_base_url}[/underline]")
+                rprint(f"[bold white]Statut[/bold white]: [bold red]{response.status_code}[/bold red]")
                 sys.exit(1)
+
         except requests.exceptions.RequestException as e:
-            print(f"Erreur: Impossible de se connecter à Ollama sur {ollama_base_url}")
-            print(f"Exception: {e}")
+            rprint(f"[bold red]Erreur[/bold red]: [underline]Impossible de se connecter à Ollama sur {ollama_base_url}[/underline]")
+            rprint(f"[bold white]Exception[/bold white]: [bold red]{e}[/bold red]")
             sys.exit(1)
             
         # Appeler l'agent
@@ -51,22 +53,21 @@ def main(
                            execute, 
                            model, 
                            ollama_base_url)
-        print("\n[END] - Résultat final:")
-        print(result)
+        rprint(f"\n[bold green]Résultat final[/bold green]: {result}")
         
     except KeyboardInterrupt:
-        print("\nInterruption par l'utilisateur", file=sys.stderr)
-        sys.exit(1)
+        rprint("\n[bold yellow]Interruption par l'utilisateur[/bold yellow]")
+        sys.exit(0)
     except Exception as e:
-        print(f"\nErreur: {e}", file=sys.stderr)
+        rprint(f"\n[bold red]Erreur[/bold red]: {e}")
         sys.exit(1)
     finally:
         if unload:
             try:
-                print(f"\nDéchargement du modèle {model}...")
+                rprint(f"\n[italic yellow]Déchargement du modèle {model}...[/italic yellow]")
                 model_unload(model, ollama_base_url)
             except Exception as e:
-                print(f"Erreur lors du déchargement du modèle: {e}", file=sys.stderr)
+                rprint(f"[bold red]Erreur[/bold red]: [underline]Lors du déchargement du modèle[/underline]: {e}")
 
 if __name__ == "__main__":
     import argparse
@@ -78,9 +79,9 @@ if __name__ == "__main__":
                         help='Description de temporelle de la tâche cron (ex: "tous les jours à 7h")')
     parser.add_argument('-e', '--execute', type=str, default=None, 
                         help='Commande à exécuter dans la tâche cron (ex: "/bin/bash /opt/script.sh")')
-    parser.add_argument('-m', '--model', type=str, default="qwen2.5:0.5b", 
-                        help='Modèle Ollama à utiliser (défaut: qwen2.5:0.5b)')
-    parser.add_argument('-u', '--ollama_base_url', type=str, default="http://localhost:11434", 
+    parser.add_argument('-m', '--model', type=str, default="llama3.2:3b", 
+                        help='Modèle Ollama à utiliser (défaut: llama3.2:3b)')
+    parser.add_argument('-u', '--ollama-base-url', type=str, default="http://localhost:11434", 
                         help='URL de base du serveur Ollama (défaut: http://localhost:11434)')
     parser.add_argument('-U', '--unload', action='store_true', default=False, 
                         help='Décharger le modèle après utilisation')
@@ -96,7 +97,7 @@ if __name__ == "__main__":
             unload=args.unload
         )
     except KeyboardInterrupt:
-        print("\nProgramme interrompu par l'utilisateur", file=sys.stderr)
-        sys.exit(1)
+        rprint("\n[bold yellow]Programme interrompu par l'utilisateur[/bold yellow]")
+        sys.exit(0)
     
     sys.exit(0)
