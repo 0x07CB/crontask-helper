@@ -7,14 +7,8 @@
 #from ollama import chat
 
 import sys
-
-from typing import List
-from typing import Dict
-from typing import Union
-from typing import Tuple
-from typing import Optional
-from typing import Any
-
+import os
+from typing import List, Dict, Union, Tuple, Optional, Any
 
 from agents import ask_agent
 from agents import model_unload
@@ -27,24 +21,63 @@ def main(
     ollama_base_url: Optional[str] = "http://localhost:11434",
     unload: Optional[bool] = False,
 ):
+    """
+    Fonction principale qui gère l'interaction avec l'agent crontask
+    
+    Args:
+        prompt: Description de la tâche cron à générer
+        execute: Commande à exécuter dans la tâche cron
+        model: Modèle Ollama à utiliser
+        ollama_base_url: URL de base du serveur Ollama
+        unload: Si True, décharge le modèle après utilisation
+    """
     try:
-        ask_agent(prompt, execute, model, ollama_base_url)
+        # Vérifier si Ollama est accessible
+        import requests
+        try:
+            response = requests.get(f"{ollama_base_url}/api/tags")
+            if response.status_code != 200:
+                print(f"Erreur: Impossible de se connecter à Ollama sur {ollama_base_url}")
+                print(f"Statut: {response.status_code}")
+                sys.exit(1)
+        except requests.exceptions.RequestException as e:
+            print(f"Erreur: Impossible de se connecter à Ollama sur {ollama_base_url}")
+            print(f"Exception: {e}")
+            sys.exit(1)
+            
+        # Appeler l'agent
+        result = ask_agent(prompt, execute, model, ollama_base_url)
+        print("\nRésultat final:")
+        print(result)
+        
+    except KeyboardInterrupt:
+        print("\nInterruption par l'utilisateur", file=sys.stderr)
+        sys.exit(1)
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"\nErreur: {e}", file=sys.stderr)
         sys.exit(1)
     finally:
         if unload:
-            model_unload(model, ollama_base_url)
+            try:
+                print(f"\nDéchargement du modèle {model}...")
+                model_unload(model, ollama_base_url)
+            except Exception as e:
+                print(f"Erreur lors du déchargement du modèle: {e}", file=sys.stderr)
 
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser(description='CronTask Helper')
-    parser.add_argument('-p', '--prompt', type=str, default=None, help='Explaination of the task to be done')
-    parser.add_argument('-e', '--execute', type=str, default=None, help='Command to be executed')
-    parser.add_argument('-m', '--model', type=str, default="qwen2.5:0.5b", help='Model to use')
-    parser.add_argument('-u', '--ollama_base_url', type=str, default="http://localhost:11434", help='Ollama base URL')
-    parser.add_argument('-U', '--unload', action='store_true', default=False, help='Unload the model after end of this script')
+    parser = argparse.ArgumentParser(description='CronTask Helper - Assistant pour générer des tâches cron')
+    parser.add_argument('-p', '--prompt', type=str, default=None, 
+                        help='Description de la tâche cron à générer (ex: "tous les jours à 7h")')
+    parser.add_argument('-e', '--execute', type=str, default=None, 
+                        help='Commande à exécuter dans la tâche cron (ex: "/bin/bash /opt/script.sh")')
+    parser.add_argument('-m', '--model', type=str, default="qwen2.5:0.5b", 
+                        help='Modèle Ollama à utiliser (défaut: qwen2.5:0.5b)')
+    parser.add_argument('-u', '--ollama_base_url', type=str, default="http://localhost:11434", 
+                        help='URL de base du serveur Ollama (défaut: http://localhost:11434)')
+    parser.add_argument('-U', '--unload', action='store_true', default=False, 
+                        help='Décharger le modèle après utilisation')
     args = parser.parse_args()
 
     try:
@@ -56,7 +89,7 @@ if __name__ == "__main__":
             unload=args.unload
         )
     except KeyboardInterrupt:
-        print("Program interrupted by user", file=sys.stderr)
+        print("\nProgramme interrompu par l'utilisateur", file=sys.stderr)
         sys.exit(1)
     
     sys.exit(0)
