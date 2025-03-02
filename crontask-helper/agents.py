@@ -17,6 +17,7 @@ from ollama import chat
 from functions import write_formatted_crontask
 from tools import write_formatted_crontask_tool
 
+from rich import print as rprint
 
 def model_unload(model: str, ollama_base_url: str):
     url = f"{ollama_base_url}/api/generate"
@@ -31,9 +32,9 @@ def model_unload(model: str, ollama_base_url: str):
     response = requests.post(url, json=payload, headers=headers)
     
     if response.status_code == 200:
-        print("Model unloaded successfully.")
+        rprint("[bold green]Modèle déchargé avec succès.[/bold green]")
     else:
-        print(f"Failed to unload model. Status code: {response.status_code}, Response: {response.text}")
+        rprint(f"[bold red]Erreur[/bold red]: [underline]Lors du déchargement du modèle[/underline]. Status code: {response.status_code}, Response: {response.text}")
 
 # Example usage
 # model_unload("llama3.2", "http://localhost:11434")
@@ -43,7 +44,7 @@ def model_unload(model: str, ollama_base_url: str):
 
 
 def generate_response(
-    model: Optional[str] = "qwen2.5:0.5b",
+    model: Optional[str] = "llama3.2:3b",
     messages: Optional[List[Dict[str, Any]]] = None,
     tools: Optional[List[Dict[str, Any]]] = None,
     available_functions: Optional[Dict[str, Any]] = None,
@@ -57,7 +58,7 @@ def generate_response(
     if messages is None:
         messages = [{'role': 'user', 'content': f'{prompt}'}]
 
-    print('Prompt:', messages[-1]['content'])
+    rprint(f'[italic yellow]Prompt:[/italic yellow] {messages[-1]["content"]}')
 
     try:
         response: ChatResponse = chat(
@@ -67,32 +68,32 @@ def generate_response(
             options=options,
         )
     except Exception as e:
-        print(f"Erreur lors de l'appel au modèle: {e}")
+        rprint(f"[bold red]Erreur[/bold red]: [underline]Lors de l'appel au modèle[/underline]: {e}")
         return f"Erreur: {e}"
   
     output = None
     final_response = response
     
     if response.message.tool_calls:
-        print(f"Le modèle a demandé {len(response.message.tool_calls)} appel(s) d'outil")
+        rprint(f"[italic yellow]Le modèle a demandé {len(response.message.tool_calls)} appel(s) d'outil[/italic yellow]")
         
         # There may be multiple tool calls in the response
         for tool in response.message.tool_calls:
             # Ensure the function is available, and then call it
             if function_to_call := available_functions.get(tool.function.name):
-                print(f'Appel de la fonction: {tool.function.name}')
-                print(f'Arguments: {tool.function.arguments}')
+                rprint(f'[italic yellow]Appel de la fonction:[/italic yellow] {tool.function.name}')
+                rprint(f'[italic yellow]Arguments:[/italic yellow] {tool.function.arguments}')
                 
                 try:
                     output = function_to_call(**tool.function.arguments)
-                    print(f'Résultat de la fonction: {output}')
+                    rprint(f'[italic yellow]Résultat de la fonction:[/italic yellow] {output}')
                 except Exception as e:
                     error_msg = f"Erreur lors de l'appel de la fonction {tool.function.name}: {e}"
-                    print(error_msg)
+                    rprint(f"[bold red]Erreur[/bold red]: [underline]{error_msg}[/underline]")
                     output = error_msg
             else:
                 error_msg = f"Fonction {tool.function.name} non trouvée"
-                print(error_msg)
+                rprint(f"[bold red]Erreur[/bold red]: [underline]{error_msg}[/underline]")
                 output = error_msg
 
         # Add the function response to messages for the model to use
@@ -104,14 +105,14 @@ def generate_response(
             # Get final response from model with function outputs
             try:
                 final_response = chat(model, messages=messages, options=options)
-                print('Réponse finale:', final_response.message.content)
+                # rprint('[italic yellow]Réponse finale:[/italic yellow]', final_response.message.content)
             except Exception as e:
-                print(f"Erreur lors de la génération de la réponse finale: {e}")
+                rprint(f"[bold red]Erreur[/bold red]: [underline]Lors de la génération de la réponse finale[/underline]: {e}")
                 return f"Erreur lors de la génération de la réponse finale: {e}"
         else:
-            print("Aucun résultat d'outil à traiter")
+            rprint('[italic yellow]Aucun résultat d\'outil à traiter[/italic yellow]')
     else:
-        print('Aucun appel d\'outil retourné par le modèle')
+        rprint('[italic yellow]Aucun appel d\'outil retourné par le modèle[/italic yellow]')
         
 
     return final_response.message.content

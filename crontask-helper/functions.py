@@ -18,11 +18,11 @@ class CrontaskFormats:
   SpecialStrings = ["@reboot", "@hourly", "@daily", "@midnight", "@weekly", "@monthly", "@yearly"]
 
 def write_formatted_crontask(
-    Minute: Optional[Union[str, int]] = "*",
-    Hour: Optional[Union[str, int]] = "*",
-    Day: Optional[Union[str, int]] = "*",
-    Month: Optional[Union[str, int]] = "*",
-    Weekday: Optional[Union[str, int]] = "*",
+    Minute: Optional[str] = None,
+    Hour: Optional[str] = None,
+    Day: Optional[str] = None,
+    Month: Optional[str] = None,
+    Weekday: Optional[str] = None,
     command_to_be_executed: Optional[str] = "{{command}}"
 ) -> str:
   """
@@ -39,20 +39,15 @@ def write_formatted_crontask(
   Raises:
       ValueError: If any parameter is None, empty, or contains only whitespace
   """
-  # Convertir tous les arguments en chaînes de caractères
+  # Convertir tous les arguments en chaînes de caractères et remplacer les valeurs vides ou None par '*'
   params = {
-    'Minute': str(Minute),
-    'Hour': str(Hour),
-    'Day': str(Day),
-    'Month': str(Month),
-    'Weekday': str(Weekday),
+    'Minute': '*' if not isinstance(Minute, str) or len(Minute) < 1 else Minute,
+    'Hour': '*' if not isinstance(Hour, str) or len(Hour) < 1 else Hour,
+    'Day': '*' if not isinstance(Day, str) or len(Day) < 1 else Day,
+    'Month': '*' if not isinstance(Month, str) or len(Month) < 1 else Month,
+    'Weekday': '*' if not isinstance(Weekday, str) or len(Weekday) < 1 else Weekday,
     'command_to_be_executed': command_to_be_executed
   }
-  
-  # Vérifier que chaque paramètre est renseigné et non vide
-  for param_name, param_value in params.items():
-    if param_value is None or param_value.strip() == '':
-      raise ValueError(f"Le paramètre {param_name} ne peut pas être vide ou None")
   
   return f"{Minute} {Hour} {Day} {Month} {Weekday} {command_to_be_executed}"
 
