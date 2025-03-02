@@ -4,12 +4,12 @@ import requests
 
 from typing import List
 from typing import Dict
-from typing import Union
-from typing import Tuple
+#from typing import Union
+#from typing import Tuple
 from typing import Optional
 from typing import Any
 
-from ollama import generate
+#from ollama import generate
 from ollama._types import Options
 from ollama import ChatResponse
 from ollama import chat
