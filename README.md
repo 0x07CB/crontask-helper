@@ -1,6 +1,7 @@
 # crontask-helper
 > a crontask configuration helper ( local ollama LLM agent exemple )
 
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/cc070a3e4f7d410da70e3ea13d49b179)](https://app.codacy.com/gh/0x07CB/crontask-helper/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 
 ## Introduction
 Ce projet vise à simplifier la création et la gestion des tâches cron à l'aide d'un agent LLM (Large Language Model) local alimenté par Ollama. Il permet de traduire des descriptions en langage naturel en configurations de tâches cron formatées, facilitant ainsi l'automatisation des tâches planifiées sur les systèmes Unix.
