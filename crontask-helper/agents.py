@@ -119,6 +119,7 @@ def generate_response(
 
 def ask_agent(
     prompt: Optional[str] = None,
+    chron_description: Optional[str] = None,
     execute: Optional[str] = None,
     model: Optional[str] = "qwen2.5:0.5b",
     ollama_base_url: Optional[str] = "http://localhost:11434"
@@ -161,7 +162,8 @@ EXEMPLES CORRECTS:
 - 0 0 * * 0 /home/user/backup.sh (chaque dimanche à minuit)
 - 30 4 1,15 * * /scripts/rapport.py (les 1er et 15 du mois à 4h30)
 
-Utilisez UNIQUEMENT la fonction write_formatted_crontask pour générer la ligne cron finale avec les paramètres exacts."""
+Utilisez UNIQUEMENT la fonction write_formatted_crontask pour générer la ligne cron finale avec les paramètres exacts.
+Ne répondez pas à la question, ne faite aucun commentaire, juste générez la ligne cron."""
 
     # Construire le message utilisateur en fonction des paramètres
     user_message = prompt if prompt else "Génère une ligne de configuration cron"
@@ -172,6 +174,9 @@ Utilisez UNIQUEMENT la fonction write_formatted_crontask pour générer la ligne
     else:
         # Message par défaut si aucune commande n'est spécifiée
         user_message += " pour exécuter une commande"
+
+    if isinstance(chron_description, str):
+        user_message += f"\n\nDescription de temporelle de la tâche cron: {chron_description}"
 
     messages_list = [
         {'role': 'system', 'content': system_message},
