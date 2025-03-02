@@ -16,6 +16,7 @@ from agents import model_unload
 
 def main(
     prompt: Optional[str] = None,
+    chron_description: Optional[str] = None,
     execute: Optional[str] = None,
     model: Optional[str] = "qwen2.5:0.5b",
     ollama_base_url: Optional[str] = "http://localhost:11434",
@@ -46,7 +47,11 @@ def main(
             sys.exit(1)
             
         # Appeler l'agent
-        result = ask_agent(prompt, execute, model, ollama_base_url)
+        result = ask_agent(prompt,
+                           chron_description,
+                           execute, 
+                           model, 
+                           ollama_base_url)
         print("\nRésultat final:")
         print(result)
         
@@ -69,7 +74,9 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='CronTask Helper - Assistant pour générer des tâches cron')
     parser.add_argument('-p', '--prompt', type=str, default=None, 
-                        help='Description de la tâche cron à générer (ex: "tous les jours à 7h")')
+                        help='Instruction pour l\'agent (ex: "Génère une ligne de configuration cron")')
+    parser.add_argument('-c', '--chronos-description', type=str, default=None, 
+                        help='Description de temporelle de la tâche cron (ex: "tous les jours à 7h")')
     parser.add_argument('-e', '--execute', type=str, default=None, 
                         help='Commande à exécuter dans la tâche cron (ex: "/bin/bash /opt/script.sh")')
     parser.add_argument('-m', '--model', type=str, default="qwen2.5:0.5b", 
@@ -83,6 +90,7 @@ if __name__ == "__main__":
     try:
         main(
             prompt=args.prompt,
+            chron_description=args.chronos_description,
             execute=args.execute,
             model=args.model,
             ollama_base_url=args.ollama_base_url,
