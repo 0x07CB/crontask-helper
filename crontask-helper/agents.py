@@ -54,41 +54,64 @@ def generate_response(
     Generate a response from the model
     """
     
-    if type(messages) == None: messages = [{'role': 'user', 'content': f'{prompt}'}]
+    if messages is None:
+        messages = [{'role': 'user', 'content': f'{prompt}'}]
 
-    print('Prompt:', messages[0]['content'])
+    print('Prompt:', messages[-1]['content'])
 
-    response: ChatResponse = chat(
-        model,
-        messages=messages,
-        tools=tools,
-        options=options,
-    )
+    try:
+        response: ChatResponse = chat(
+            model,
+            messages=messages,
+            tools=tools,
+            options=options,
+        )
+    except Exception as e:
+        print(f"Erreur lors de l'appel au modèle: {e}")
+        return f"Erreur: {e}"
   
+    output = None
+    final_response = response
+    
     if response.message.tool_calls:
+        print(f"Le modèle a demandé {len(response.message.tool_calls)} appel(s) d'outil")
+        
         # There may be multiple tool calls in the response
         for tool in response.message.tool_calls:
             # Ensure the function is available, and then call it
             if function_to_call := available_functions.get(tool.function.name):
-                print('Calling function:', tool.function.name)
-                print('Arguments:', tool.function.arguments)
-                output = function_to_call(**tool.function.arguments)
-                print('Function output:', output)
+                print(f'Appel de la fonction: {tool.function.name}')
+                print(f'Arguments: {tool.function.arguments}')
+                
+                try:
+                    output = function_to_call(**tool.function.arguments)
+                    print(f'Résultat de la fonction: {output}')
+                except Exception as e:
+                    error_msg = f"Erreur lors de l'appel de la fonction {tool.function.name}: {e}"
+                    print(error_msg)
+                    output = error_msg
             else:
-                print('Function', tool.function.name, 'not found')
+                error_msg = f"Fonction {tool.function.name} non trouvée"
+                print(error_msg)
+                output = error_msg
 
-    # Only needed to chat with the model using the tool call results
-    if response.message.tool_calls:
         # Add the function response to messages for the model to use
         messages.append(response.message)
-        messages.append({'role': 'tool', 'content': str(output), 'name': tool.function.name})
+        
+        if output is not None:
+            messages.append({'role': 'tool', 'content': str(output), 'name': tool.function.name})
 
-        # Get final response from model with function outputs
-        final_response = chat(model, messages=messages, options=options)
-        print('Final response:', final_response.message.content)
-
+            # Get final response from model with function outputs
+            try:
+                final_response = chat(model, messages=messages, options=options)
+                print('Réponse finale:', final_response.message.content)
+            except Exception as e:
+                print(f"Erreur lors de la génération de la réponse finale: {e}")
+                return f"Erreur lors de la génération de la réponse finale: {e}"
+        else:
+            print("Aucun résultat d'outil à traiter")
     else:
-        print('No tool calls returned from model')
+        print('Aucun appel d\'outil retourné par le modèle')
         
 
     return final_response.message.content
@@ -103,9 +126,56 @@ def ask_agent(
     """
     Ask the agent
     """
+    # Message système avec instructions détaillées
+    system_message = """Agissez en tant qu'expert en configuration de tâches cron. Votre mission est de générer une ligne de configuration crontask correctement formatée.
+
+FORMAT STRICT À RESPECTER:
+```
+Minute Hour Day Month Weekday command_to_be_executed
+```
+
+RÈGLES IMPORTANTES:
+1. Minute: 0-59 ou * (tous)
+2. Hour: 0-23 ou * (tous)
+3. Day: 1-31 ou * (tous)
+4. Month: 1-12 ou * (tous)
+5. Weekday: 0-6 (0=dimanche) ou * (tous)
+
+OPÉRATEURS DISPONIBLES:
+- * : tous (ex: * * * * * = chaque minute)
+- , : liste de valeurs (ex: 1,3,5)
+- - : plage de valeurs (ex: 1-5)
+- / : pas d'incrémentation (ex: */5 = tous les 5)
+
+CHAÎNES SPÉCIALES:
+- @reboot : au démarrage
+- @yearly/@annually : 0 0 1 1 * (1er janvier à minuit)
+- @monthly : 0 0 1 * * (1er du mois à minuit)
+- @weekly : 0 0 * * 0 (dimanche à minuit)
+- @daily/@midnight : 0 0 * * * (chaque jour à minuit)
+- @hourly : 0 * * * * (au début de chaque heure)
+
+EXEMPLES CORRECTS:
+- 0 7 * * * /bin/bash /opt/script.sh (tous les jours à 7h00)
+- */15 * * * * /usr/bin/php /var/www/cron.php (toutes les 15 minutes)
+- 0 0 * * 0 /home/user/backup.sh (chaque dimanche à minuit)
+- 30 4 1,15 * * /scripts/rapport.py (les 1er et 15 du mois à 4h30)
+
+Utilisez UNIQUEMENT la fonction write_formatted_crontask pour générer la ligne cron finale avec les paramètres exacts."""
+
+    # Construire le message utilisateur en fonction des paramètres
+    user_message = prompt if prompt else "Génère une ligne de configuration cron"
+    
+    # Si une commande à exécuter est fournie, l'ajouter au message
+    if execute:
+        user_message += f" pour exécuter la commande '{execute}'"
+    else:
+        # Message par défaut si aucune commande n'est spécifiée
+        user_message += " pour exécuter une commande"
+
     messages_list = [
-        {'role': 'system', 'content': "Agissez en tant qu'expert en configuration de tâches cron. Votre mission est de générer une ligne de configuration crontask correctement formatée. Respectez strictement le format suivant :\n\nMinute Hour Day Month Weekday command_to_be_executed\n\nUtilisez les opérateurs (*, -, /, ,) et les chaînes spéciales (@reboot, @daily, etc.) lorsque c'est nécessaire."},
-        {'role': 'user', 'content': "Génère une ligne de configuration cron pour exécuter la commande '/bin/bash /opt/script1.sh' tous les jours à 07:00."}
+        {'role': 'system', 'content': system_message},
+        {'role': 'user', 'content': user_message}
     ]
     tools_list = [write_formatted_crontask_tool]
     prompt_ = None
@@ -126,7 +196,7 @@ def ask_agent(
     )
 
     response = generate_response(
-        model="qwen2.5:0.5b",
+        model=model,
         messages=messages_list,
         tools=tools_list,
         available_functions=available_functions,
