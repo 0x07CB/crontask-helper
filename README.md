@@ -29,32 +29,16 @@ Avant d'utiliser `crontask-helper`, assurez-vous d'avoir les éléments suivants
 
 ## Utilisation
 
-Le script principal `main.py` prend plusieurs arguments en ligne de commande :
+Le script `main.py` est l'interface principale pour interagir avec l'agent de configuration de tâches cron. Il accepte les arguments suivants en ligne de commande :
 
-*   `-p` ou `--prompt`: Description en langage naturel de la tâche cron à créer.
-*   `-e` ou `--execute`: Commande à exécuter (optionnel, peut être inclus dans le prompt).
-*   `-m` ou `--model`: Modèle Ollama à utiliser (par défaut : `qwen2.5:0.5b`).
-*   `-u` ou `--ollama_base_url`: URL de base d'Ollama (par défaut : `http://localhost:11434`).
-*   `-U` ou `--unload`: Décharger le modèle après l'exécution du script.
+*   `-p` ou `--prompt` : Description en langage naturel de la tâche cron à générer. Cette description guide l'agent dans la création de la configuration cron appropriée.
+*   `-c` ou `--chronos-description`: Description temporelle de la tâche cron.
+*   `-e` ou `--execute` : Commande à exécuter par la tâche cron. Cet argument est optionnel ; si omis, une commande par défaut sera utilisée ou l'agent demandera plus de détails.
+*   `-m` ou `--model` : Nom du modèle Ollama à utiliser pour la génération de la tâche cron (par défaut : `qwen2.5:0.5b`). Assurez-vous que le modèle est installé localement via Ollama.
+*   `-u` ou `--ollama_base_url` : URL de base du serveur Ollama (par défaut : `http://localhost:11434`). Modifiez cette URL si votre serveur Ollama est hébergé ailleurs.
+*   `-U` ou `--unload` : Indique si le modèle Ollama doit être déchargé de la mémoire après l'exécution du script. Utile pour économiser des ressources système.
 
-Exemple d'utilisation :
-
-```bash
-# Générer une tâche cron pour exécuter un script tous les jours à 7h
-python main.py -p "tous les jours à 7h du matin" -e "/bin/bash /opt/scripts/backup.sh"
-
-# Générer une tâche cron pour exécuter un script toutes les 15 minutes
-python main.py -p "toutes les 15 minutes" -e "/usr/bin/php /var/www/cron.php"
-
-# Générer une tâche cron pour exécuter un script le premier jour de chaque mois à minuit
-python main.py -p "le premier jour de chaque mois à minuit" -e "/home/user/monthly-report.sh"
-
-# Utiliser un modèle différent
-python main.py -p "tous les lundis à 8h" -e "/bin/bash /opt/scripts/weekly.sh" -m "llama3:8b"
-
-# Décharger le modèle après utilisation
-python main.py -p "tous les jours à 23h" -e "/bin/bash /opt/scripts/daily.sh" -U
-```
+Voici quelques exemples d'utilisation pour illustrer comment configurer différentes tâches cron :
 
 ## Format des tâches cron
 
