@@ -4,7 +4,7 @@
 
 #from typing import List
 #from typing import Dict
-from typing import Union
+#from typing import Union
 #from typing import Tuple
 from typing import Optional
 #from typing import Any
@@ -18,11 +18,11 @@ class CrontaskFormats:
   SpecialStrings = ["@reboot", "@hourly", "@daily", "@midnight", "@weekly", "@monthly", "@yearly"]
 
 def write_formatted_crontask(
-    Minute: Optional[Union[str, int]] = "*",
-    Hour: Optional[Union[str, int]] = "*",
-    Day: Optional[Union[str, int]] = "*",
-    Month: Optional[Union[str, int]] = "*",
-    Weekday: Optional[Union[str, int]] = "*",
+    Minute: Optional[str] = "*",
+    Hour: Optional[str] = "*",
+    Day: Optional[str] = "*",
+    Month: Optional[str] = "*",
+    Weekday: Optional[str] = "*",
     command_to_be_executed: Optional[str] = "{{command}}"
 ) -> str:
   """
@@ -41,11 +41,11 @@ def write_formatted_crontask(
   """
   # Convertir tous les arguments en chaînes de caractères et remplacer les valeurs vides ou None par '*'
   params = {
-    'Minute': '*' if Minute is None or str(Minute).strip() == '' else str(Minute),
-    'Hour': '*' if Hour is None or str(Hour).strip() == '' else str(Hour),
-    'Day': '*' if Day is None or str(Day).strip() == '' else str(Day),
-    'Month': '*' if Month is None or str(Month).strip() == '' else str(Month),
-    'Weekday': '*' if Weekday is None or str(Weekday).strip() == '' else str(Weekday),
+    'Minute': '*' if isinstance(Minute, None) else Minute,
+    'Hour': '*' if isinstance(Hour, None) else Hour,
+    'Day': '*' if isinstance(Day, None) else Day,
+    'Month': '*' if isinstance(Month, None) else Month,
+    'Weekday': '*' if isinstance(Weekday, None) else Weekday,
     'command_to_be_executed': command_to_be_executed
   }
   
