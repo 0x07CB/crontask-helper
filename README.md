@@ -1,4 +1,7 @@
 # crontask-helper
+
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/92f7a795e46c49d6a764381af7ed3ea3)](https://app.codacy.com/gh/0x07CB/crontask-helper?utm_source=github.com&utm_medium=referral&utm_content=0x07CB/crontask-helper&utm_campaign=Badge_Grade)
+
 > a crontask configuration helper ( local ollama LLM agent exemple )
 
 
