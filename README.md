@@ -35,7 +35,7 @@ Le script `main.py` constitue l'interface principale pour interagir avec l'agent
 *   `-p` ou `--prompt` : Instruction destinée à l'agent, par exemple "Génère une ligne de configuration cron". Cet argument spécifie la description en langage naturel de la tâche cron à générer.
 *   `-c` ou `--chronos-description` : Description temporelle de la tâche cron, par exemple "tous les jours à 7h". Cela permet de définir la planification de l'exécution.
 *   `-e` ou `--execute` : Commande à exécuter par la tâche cron, telle que `/bin/bash /opt/script.sh`. Si cet argument est omis, l'agent utilisera une commande par défaut ou sollicitera des précisions supplémentaires.
-*   `-m` ou `--model` : Nom du modèle Ollama à utiliser pour générer la configuration cron (défaut : `qwen2.5:0.5b`). Veillez à ce que ce modèle soit installé localement via Ollama.
+*   `-m` ou `--model` : Nom du modèle Ollama à utiliser pour générer la configuration cron (défaut : `llama3.2:3b`). Veillez à ce que ce modèle soit installé localement via Ollama.
 *   `-u` ou `--ollama_base_url` : URL de base du serveur Ollama (défaut : `http://localhost:11434`). Modifiez ce paramètre si votre serveur Ollama est accessible à une autre adresse.
 *   `-U` ou `--unload` : Flag indiquant que le modèle doit être déchargé de la mémoire après l'exécution du script, ce qui permet d'économiser des ressources système.
 
@@ -70,7 +70,7 @@ Si vous rencontrez des problèmes :
 
 1. Assurez-vous qu'Ollama est en cours d'exécution : `curl http://localhost:11434/api/tags`
 2. Vérifiez que le modèle spécifié est disponible : `ollama list`
-3. Si le modèle n'est pas disponible, téléchargez-le : `ollama pull qwen2.5:0.5b`
+3. Si le modèle n'est pas disponible, téléchargez-le : `ollama pull llama3.2:3b`
 
 ## Licence
 
