@@ -43,6 +43,21 @@ Pour plus de détails sur ces arguments, consultez la section d'argparsing dans 
 
 Voici quelques exemples d'utilisation pour illustrer comment configurer différentes tâches cron :
 
+### Utilisation via Docker
+
+Vous pouvez également utiliser Docker pour exécuter crontask-helper. Voici comment procéder :
+
+1. Construisez l'image Docker :
+   docker build -t crontask-helper .
+
+2. Lancez le conteneur (l'aide s'affiche par défaut) :
+   docker run --rm crontask-helper
+
+Si vous souhaitez lancer le conteneur avec des options spécifiques, ajoutez-les à la commande docker run, par exemple :
+   docker run --rm crontask-helper -p "Génère une configuration cron" -c "tous les jours à 7h" -e "/bin/bash /opt/script.sh"
+
+Assurez-vous d'avoir Docker installé et en fonctionnement sur votre système.
+
 ## Format des tâches cron
 
 Les tâches cron suivent un format standard avec 5 champs temporels suivis de la commande à exécuter :
