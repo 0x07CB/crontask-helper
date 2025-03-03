@@ -1,7 +1,6 @@
 #coding: utf-8
 
 import requests
-
 from typing import List
 from typing import Dict
 #from typing import Union
@@ -58,7 +57,7 @@ def generate_response(
     if messages is None:
         messages = [{'role': 'user', 'content': f'{prompt}'}]
 
-    rprint(f'[italic yellow]Prompt:[/italic yellow] {messages[-1]["content"]}')
+    rprint(f'[italic yellow]Prompt:[/italic yellow] \n{messages[-1]["content"]}')
 
     try:
         response: ChatResponse = chat(
@@ -177,7 +176,7 @@ Ne répondez pas à la question, ne faite aucun commentaire, juste générez la 
         user_message += " pour exécuter une commande"
 
     if isinstance(chron_description, str):
-        user_message += f"\n\nDescription de temporelle de la tâche cron: {chron_description}"
+        user_message += f"\nDescription de temporelle de la tâche cron: {chron_description}"
 
     messages_list = [
         {'role': 'system', 'content': system_message},

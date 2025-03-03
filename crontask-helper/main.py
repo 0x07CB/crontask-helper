@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 #coding: utf-8
 
-#from ollama import generate
-#from ollama._types import Options
-#from ollama import ChatResponse
-#from ollama import chat
+__version__ = "0.1.1"
+__author__ = "@0x07cb"
+__description__ = "Assistant pour générer des tâches cron"
 
+from bdb import effective
 import sys
 from typing import Optional
 
@@ -24,13 +24,26 @@ def main(
 ):
     """
     Fonction principale qui gère l'interaction avec l'agent crontask
-    
+
+    Cette fonction effective les étapes suivantes :
+    1. Vérifie la connectivité avec le serveur Ollama
+    2. Appelle l'agent pour générer une configuration de tâche cron
+    3. Affiche le résultat final
+    4. Gère les erreurs et interruptions
+    5. Décharge optionnellement le modèle de la mémoire
+
     Args:
-        prompt: Description de la tâche cron à générer
-        execute: Commande à exécuter dans la tâche cron
-        model: Modèle Ollama à utiliser
-        ollama_base_url: URL de base du serveur Ollama
-        unload: Si True, décharge le modèle après utilisation
+        prompt (Optional[str]): Instruction pour l'agent, décrivant la tâche cron à générer
+        chron_description (Optional[str]): Description temporelle de la tâche cron 
+        execute (Optional[str]): Commande spécifique à exécuter dans la tâche cron
+        model (Optional[str]): Modèle Ollama à utiliser pour la génération (défaut: "llama3.2:3b")
+        ollama_base_url (Optional[str]): URL du serveur Ollama (défaut: "http://localhost:11434")
+        unload (Optional[bool]): Indicateur pour décharger le modèle après utilisation
+
+    Raises:
+        requests.exceptions.RequestException: Si la connexion à Ollama échoue
+        KeyboardInterrupt: Si l'utilisateur interrompt l'exécution
+        Exception: Pour toute autre erreur inattendue
     """
     try:
         # Vérifier si Ollama est accessible
@@ -69,10 +82,24 @@ def main(
             except Exception as e:
                 rprint(f"[bold red]Erreur[/bold red]: [underline]Lors du déchargement du modèle[/underline]: {e}")
 
+
+def usage():
+    rprint(f"[bold cyan]Usage:[/bold cyan] [green]crontask-helper[/green] [yellow][options][/yellow]")
+    rprint(f"[bold white]Options:[/bold white]")
+    rprint(f"  [blue]-p[/blue], [blue]--prompt[/blue] <[magenta]prompt[/magenta]>    [white]Instruction pour l'agent[/white] [dim](ex: \"[italic]Génère une ligne de configuration cron[/italic]\")")
+    rprint(f"  [blue]-c[/blue], [blue]--chronos-description[/blue] <[magenta]description[/magenta]>    [white]Description temporelle de la tâche cron[/white] [dim](ex: \"[italic]tous les jours à 7h[/italic]\")")
+    rprint(f"  [blue]-e[/blue], [blue]--execute[/blue] <[magenta]commande[/magenta]>    [white]Commande à exécuter dans la tâche cron[/white] [dim](ex: \"[italic]/bin/bash /opt/script.sh[/italic]\")")
+    rprint(f"  [blue]-m[/blue], [blue]--model[/blue] <[magenta]model[/magenta]>    [white]Modèle Ollama à utiliser[/white] [dim](défaut: [italic]llama3.2:3b[/italic])")
+    rprint(f"  [blue]-u[/blue], [blue]--ollama-base-url[/blue] <[magenta]url[/magenta]>    [white]URL de base du serveur Ollama[/white] [dim](défaut: [italic]http://localhost:11434[/italic])")
+    rprint(f"  [blue]-U[/blue], [blue]--unload[/blue]    [white]Décharger le modèle après utilisation[/white]")
+
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser(description='CronTask Helper - Assistant pour générer des tâches cron')
+    parser = argparse.ArgumentParser(prog=f"crontask-helper v{__version__}",
+                                     description='CronTask Helper - Assistant pour générer des tâches cron'
+                                     )
+    
     parser.add_argument('-p', '--prompt', type=str, default=None, 
                         help='Instruction pour l\'agent (ex: "Génère une ligne de configuration cron")')
     parser.add_argument('-c', '--chronos-description', type=str, default=None, 
